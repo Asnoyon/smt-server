@@ -1,67 +1,73 @@
 const express = require("express");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
-const nodmailer = require("nodemailer");
-const port = process.env.PORT || 5000;
-const app = express();
 
-app.use(cors());
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.use(cors(
+  {
+    origin: ['http://localhost:3000'],
+  }
+));
 app.use(express.json());
 
-app.post("/contact-us", (req, res) => {
-  const { email, name, message, category, subCategory } = req.body;
+app.post("/contact-us", async (req, res) => {
+  const { name, email } = req.body;
 
-  const transporter = nodmailer.createTransport({
-    host: `${process.env.SMTP}`,
-    port: 400,
-    secure: false,
+  console.log(req.body);
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.titan.email",
+    port: 465,
+    secure: true,
     auth: {
       user: `${process.env.CPANEL_EMAIL}`,
       pass: `${process.env.CPANEL_EMAIL_PASS}`,
     },
   });
 
+  // Receive user Email
+  const contactMailOptions = {
+    from: "test@smtech24.com", // Correct sender address to match SMTP credentials
+    to: `${process.env.CPANEL_EMAIL}`,
+    subject: `Message from ${name}`,
+    html: `<p>Email: ${email}<br>Name: ${name}</p>`,
+  };
+
   // Send user feedback Email
   const feedbackMailOptions = {
-    from: `${process.env.SMTP}`,
+    from: "test@smtech24.com", // Correct sender address to match SMTP credentials
     to: email,
-    subject: `Recived your Ticket`,
-    html: `<p>Thank your for rechingout</p>`,
+    subject: `Received your Ticket`,
+    html: `<p>Thank you for reaching out.</p>`,
   };
 
-  // Resive user Email
+  try {
+    // Send feedback email
+    const feedbackInfo = await transporter.sendMail(feedbackMailOptions);
+    console.log(`Feedback Email sent successfully: ${feedbackInfo.response}`);
 
-  transporter.sendMail(feedbackMailOptions, (error, info) => {
-    if (error) {
-      console.log(`Error sending email ${error}`);
-    } else {
-      console.log(`Message Sended success fully ${info.response}`);
-    }
-  });
+    // Send contact email
+    const contactInfo = await transporter.sendMail(contactMailOptions);
+    console.log("Contact Email sent successfully");
 
-  const contactMailOptions = {
-    from: email,
-    to: `${process.env.CPANEL_EMAIL}`,
-    subject: `message came from SMT contact from sender ${name}`,
-    htmml: `<p>'${email}', '${name}'</p>`,
-  };
-
-  transporter.sendMail(contactMailOptions, (error, info) => {
-    if (error) {
-      console.log(`Errro happen for ${error}`);
-      res.status(500).send({ message: "Error Sending Email" });
-    } else {
-      console.log("Email Sended Successfully");
-      res.status(200).send({
-        message: "Thank you for reaching out. We will contact you shortly.",
-      });
-    }
-  });
+    // Respond to client
+    res.status(200).send({
+      success: true,
+      message: "Thank you for reaching out. We will contact you shortly.",
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).send({ success: false, message: "Error Sending Email" });
+  }
 });
+
 app.get("/", (req, res) => {
-  res.status(200).send({ messgae: "OK" });
+  res.status(200).send({ message: "OK" });
 });
 
 app.listen(port, () => {
-  console.log(`my server is running port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
