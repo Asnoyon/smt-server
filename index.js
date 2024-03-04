@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://smt-echnology.vercel.app", "https://smtech24.com"],
   })
 );
 app.use(express.json());
