@@ -14,7 +14,7 @@ app.use(
 app.use(express.json());
 
 app.post("/contact-us", async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, company_name, service, category, message } = req.body;
 
   console.log(req.body);
 
@@ -26,6 +26,7 @@ app.post("/contact-us", async (req, res) => {
       user: `${process.env.CPANEL_EMAIL}`,
       pass: `${process.env.CPANEL_EMAIL_PASS}`,
     },
+    pool: true,
   });
 
   // Receive user Email
@@ -33,7 +34,95 @@ app.post("/contact-us", async (req, res) => {
     from: "test@smtech24.com", // Correct sender address to match SMTP credentials
     to: `${process.env.CPANEL_EMAIL}`,
     subject: `Message from ${name}`,
-    html: `<p>Email: ${email}<br>Name: ${name}</p>`,
+    html: `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Contact Form Submission</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 20px;
+        }
+    
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #fff;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          padding: 20px;
+        }
+    
+        h2 {
+          margin-bottom: 10px;
+        }
+    
+        p {
+          margin-bottom: 20px;
+        }
+    
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+    
+        th, td {
+          padding: 10px;
+          border-bottom: 1px solid #ddd;
+        }
+    
+        th {
+          background-color: #f2f2f2;
+          text-align: left;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Contact Form Submission</h2>
+        <p>A new message has been submitted via the contact form:</p>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company Name</th>
+            <th>Service</th>
+            <th>Category</th>
+            <th>Message</th>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td>${name}</td>
+          </tr>
+          <tr>
+            <td>Email</td>
+            <td>${email}</td>
+          </tr>
+          <tr>
+            <td>Company Name</td>
+            <td>${company_name}</td>
+          </tr>
+          <tr>
+            <td>Service</td>
+            <td>${service}</td>
+          </tr>
+          <tr>
+            <td>Category</td>
+            <td>${category}</td>
+          </tr>
+          <tr>
+            <td>Message</td>
+            <td>${message}</td>
+          </tr>
+        </table>
+      </div>
+    </body>
+    </html>
+    `,
   };
 
   // Send user feedback Email
