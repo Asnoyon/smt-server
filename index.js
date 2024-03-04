@@ -8,13 +8,24 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://smt-echnology.vercel.app", "https://smtech24.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://smt-echnology.vercel.app",
+      "https://smtech24.com",
+    ],
   })
 );
 app.use(express.json());
 
 app.post("/contact-us", async (req, res) => {
-  const { name, email, company_name, service, category, message } = req.body;
+  const {
+    name,
+    email,
+    company_name = "not given",
+    service = "not given",
+    category = "not given",
+    message,
+  } = req.body;
 
   console.log(req.body);
 
