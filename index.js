@@ -18,16 +18,9 @@ app.use(
 app.use(express.json());
 
 app.post("/contact-us", async (req, res) => {
-  const {
-    name,
-    email,
-    company_name = "not given",
-    service = "not given",
-    category = "not given",
-    message,
-  } = req.body;
+  const { name, email, company_name, service, category, message } = req.body;
 
-  console.log(req.body);
+ 
 
   const transporter = nodemailer.createTransport({
     host: "smtp.titan.email",
@@ -226,8 +219,14 @@ app.post("/contact-us", async (req, res) => {
       message: "Thank you for reaching out. We will contact you shortly.",
     });
   } catch (error) {
-    console.error("Error sending email:", error);
-    res.status(500).send({ success: false, message: "Error Sending Email" });
+    // Handling SMTP error 550
+    // console.log(error.responseCode);
+    // res.send(error);
+    if(error.responseCode === 550){
+      res.send({success: false, message: 'This email adress  is not valid enter correct email address'})
+    }else{
+      res.status(500).send({message: 'internal server error'})
+    }
   }
 });
 
