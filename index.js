@@ -129,7 +129,7 @@ app.post("/contact-us", async (req, res) => {
   const feedbackMailOptions = {
     from: "test@smtech24.com", // Correct sender address to match SMTP credentials
     to: email,
-    subject: `Received your Ticket`,
+    subject: `Received your Information`,
     html: `
     <!DOCTYPE html>
     <html lang="en">
