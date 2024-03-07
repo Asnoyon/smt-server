@@ -31,7 +31,7 @@ app.post("/contact-us", async (req, res) => {
 
   // Receive user Email
   const contactMailOptions = {
-    from: "test@smtech24.com", // Correct sender address to match SMTP credentials
+    from: "hello@smtech24.com", // Correct sender address to match SMTP credentials
     to: `${process.env.CPANEL_EMAIL}`,
     subject: `Message from ${name}`,
     html: `<!DOCTYPE html>
@@ -127,7 +127,7 @@ app.post("/contact-us", async (req, res) => {
 
   // Send user feedback Email
   const feedbackMailOptions = {
-    from: "test@smtech24.com", // Correct sender address to match SMTP credentials
+    from: "hello@smtech24.com", // Correct sender address to match SMTP credentials
     to: email,
     subject: `Received your Information`,
     html: `
